@@ -1,0 +1,6 @@
+django
+djangorestframework
+drf_spectacular
+requests
+psycopg2-binary
+python-dotenv
