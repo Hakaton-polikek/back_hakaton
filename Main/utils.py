@@ -2,7 +2,7 @@ import os
 from uuid import uuid4
 
 import requests
-from django.conf.global_settings import EMAIL_HOST_USER
+from polikek_rf.settings import EMAIL_HOST_USER
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from rest_framework.exceptions import ValidationError

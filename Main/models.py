@@ -16,7 +16,7 @@ class Question(models.Model):
 
 class Answer(models.Model):
     question = models.ForeignKey("Question", models.CASCADE)
-    speciality = models.ForeignKey("Speciality", models.CASCADE)
+    speciality = models.ForeignKey("Users.Speciality", models.CASCADE)
     answer_number = models.IntegerField()
     text = models.TextField()
 

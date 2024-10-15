@@ -15,6 +15,7 @@ from Users.utils import OrgAdminAuthentication, UserAuthentication
 class TestsViewSet(GenericViewSet):
     authentication_classes = [OrgAdminAuthentication]
     serializer_class = TestSerializer
+    queryset = Test.objects.all()
 
     @action(methods=["GET"], detail=False, url_path="get-all")
     def get_all(self, request):
@@ -25,7 +26,7 @@ class TestsViewSet(GenericViewSet):
         "name": serializers.CharField()
     }))
     @action(methods=["POST"], detail=False, url_path="create")
-    def create(self, request: Request):
+    def add(self, request: Request):
         test_serializer = self.serializer_class(data=request.data)
         test_serializer.is_valid(raise_exception=True)
         test_serializer.save()
@@ -60,18 +61,20 @@ class TestsViewSet(GenericViewSet):
                             answer_number=request.data.get("answer_number"),
                             speciality_id=request.data.get("speciality_id"))
             answer.save()
-        except:
+        except Exception as e:
+            print(e)
             return Response(status=400, data={"message": "Невалидные данные!"})
         return Response(status=200, data={"message": "Ответ добавлен!"})
 
-    @extend_schema(request=[inline_serializer("TestGetQuestion", fields={
+    @extend_schema(parameters=[inline_serializer("TestGetQuestion", fields={
         "test_id": serializers.IntegerField()
     })])
-    @action(methods=["GET"], detail=True, url_path="get-question")
+    @action(methods=["GET"], detail=True, url_path="get-question", authentication_classes=[UserAuthentication])
     def get_question(self, request: Request, **kwargs):
         try:
-            question = Question.objects.filter(test_id=request.query_params.get("test_id"))[kwargs.get("pk")-1]
-        except:
+            question = Question.objects.filter(test_id=request.query_params.get("test_id"))[int(kwargs.get("pk"))-1]
+        except Exception as e:
+            print(e)
             return Response(status=404, data={"message": "Такого вопроса не существует!"})
         return Response(status=200, data=question.to_dict())
 
@@ -79,20 +82,23 @@ class TestsViewSet(GenericViewSet):
         "test_id": serializers.IntegerField(),
         "answer_id": serializers.IntegerField(),
     }))
-    @action(methods=["POST"], detail=False, url_path="answer")
+    @action(methods=["POST"], detail=True, url_path="answer", authentication_classes=[UserAuthentication])
     def answer(self, request: Request, **kwargs):
         try:
-            question = Question.objects.filter(test_id=request.data.get("test_id"))[kwargs.get("pk")-1]
-            answers_count = len(question.answers)
-            answer = question.answers[request.data.get("answer_id")-1]
+            question = Question.objects.filter(test_id=request.data.get("test_id"))[int(kwargs.get("pk"))-1]
+            answers = Answer.objects.filter(question=question)
+            answers_count = len(answers)
+            answer = answers[int(request.data.get("answer_id"))-1]
             user_spec_scores = request.user.scores.get(answer.speciality.pk)
             if not user_spec_scores:
                 user_spec_scores = 0
             request.user.scores[answer.speciality.pk] = user_spec_scores
             request.user.save()
-        except:
+        except Exception as e:
+            print(e)
             return Response(status=400, data={"message": "Невалидные данные!"})
-        if request.data.get("answer_id")-1 == answers_count:
+        print(int(request.data.get("answer_id")), answers_count)
+        if int(request.data.get("answer_id"))-1 == answers_count:
             speciality_id = max(request.user.scores)
             speciality = Speciality.objects.get(id=speciality_id)
             return Response(status=200, data={

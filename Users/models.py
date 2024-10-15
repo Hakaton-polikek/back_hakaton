@@ -8,7 +8,8 @@ class User(models.Model):
         USER = ("user", "Пользователь",)
         ORG_ADMIN = ("org-admin", "Администратор организации",)
         DEV = ("dev", "Разработчик",)
-        ROOT_ADMIN = ("root-admin", "Администратор платформы")
+        ADMIN = ("admin", "Администратор платформы")
+        ROOT_ADMIN = ("root-admin", "ГА платформы")
 
     email = models.EmailField(unique=True)
     password = models.CharField()
@@ -28,7 +29,7 @@ class User(models.Model):
             id=self.pk, email=self.email, is_active=self.is_active, role=self.role,
             banned=self.banned, last_active=self.last_active
         )
-        additional_data = {"name": self.name, "photo": self.photo, "inn": self.inn}
+        additional_data = {"name": self.name}
         for field in additional_data:
             if additional_data[field]:
                 data[field] = additional_data[field]

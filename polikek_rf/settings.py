@@ -36,10 +36,17 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'polikek_rf.urls'
 
+EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND")
+EMAIL_HOST = os.environ.get("EMAIL_HOST")
+EMAIL_PORT = os.environ.get("EMAIL_PORT")
+EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS")
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ["Templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -94,3 +101,5 @@ APPEND_SLASH = True
 CSP_SCRIPT_SRC = ("'self'", 'ajax.googleapis.com', "'unsafe-inline'")
 SMARTCAPTCHA_ENABLED = True if os.environ.get("SMARTCAPTCHA_ENABLED").lower() == "true" else False
 SMARTCAPTCHA_SERVER_KEY=os.environ.get("SMARTCAPTCHA_SERVER_KEY")
+
+TEMPLATES_PATH = os.path.join(BASE_DIR, 'Templates')

@@ -97,21 +97,17 @@ class UserViewSet(GenericViewSet):
         return response
 
     @extend_schema(request=inline_serializer(name="UserConfirmEmailSerializer",
-                                             fields={"email": serializers.EmailField(required=True),
-                                                     "confirm-token": serializers.UUIDField(required=True)}))
+                                             fields={"confirm-token": serializers.UUIDField(required=True)}))
     @action(methods=["POST"], detail=False, url_path="confirm-email",
             parser_classes=[JSONParser], authentication_classes=[])
     def confirm_email(self, request):
         """
         Функция подтверждения почты
         """
-        email = request.data.get("email")
         token = request.data.get("confirm-token")
         try:
             confirm_request = ConfirmRequest.objects.get(token=token)
         except:
-            return Response(status=404, data={"message": "Несуществующий токен подтверждения!"})
-        if email != confirm_request.user.email:
             return Response(status=404, data={"message": "Несуществующий токен подтверждения!"})
         if not confirm_request.validate():
             confirm_request.delete()
