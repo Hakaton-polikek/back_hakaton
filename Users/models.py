@@ -6,8 +6,9 @@ from django.db import models
 class User(models.Model):
     class RoleChoice(models.TextChoices):
         USER = ("user", "Пользователь",)
-        ADMIN = ("admin", "Администратор",)
+        ORG_ADMIN = ("org-admin", "Администратор организации",)
         DEV = ("dev", "Разработчик",)
+        ROOT_ADMIN = ("root-admin", "Администратор платформы")
 
     email = models.EmailField(unique=True)
     password = models.CharField()
@@ -16,6 +17,7 @@ class User(models.Model):
     banned = models.BooleanField(default=False)
     name = models.CharField(max_length=40, blank=True, null=True)
     last_active = models.DateTimeField(auto_now=True)
+    group = models.ForeignKey("Group", on_delete=models.SET_NULL, blank=True, null=True)
 
     class Meta:
         db_table = "users"
@@ -51,14 +53,15 @@ class Token(models.Model):
     expiration_date = models.DateField()
 
 
+class Speciality(models.Model):
+    name = models.CharField()
+
+
 class Group(models.Model):
     class Places(models.TextChoices):
         it_cube = "it-cube", "IT-КУБ"
         cvantorium = "cvantorium", "Кванториум"
         it_cube_skopin = "it-cube-scopin", "IT-КУБ Г. Скопин"
-        it_cube_sasobo = "it-cube-sasovo", "IT-КУБ Г. Сасово"
-    class Specialities(models.TextChoices):
-        sys_admin = "sys-admin", "Системный Администратор"
-        back_dev = "back-dev", "Бэкенд-разработчик"
+        it_cube_sasovo = "it-cube-sasovo", "IT-КУБ Г. Сасово"
     place = models.CharField(choices=Places.choices)
-
+    speciality = models.ForeignKey("Speciality", models.CASCADE, blank=True, null=True)

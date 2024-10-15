@@ -41,9 +41,9 @@ class UserAuthentication(BaseAuthentication):
         return base_authenticate(request, "user")
 
 
-class SMMAuthentication(BaseAuthentication):
+class OrgAdminAuthentication(BaseAuthentication):
     def authenticate(self, request):
-        return base_authenticate(request, "smm")
+        return base_authenticate(request, "org-admin")
 
 
 class DevAuthentication(BaseAuthentication):
@@ -54,14 +54,6 @@ class DevAuthentication(BaseAuthentication):
 class AdminAuthentication(BaseAuthentication):
     def authenticate(self, request):
         return base_authenticate(request, "admin")
-
-
-class StaffAuthentication(BaseAuthentication):
-    def authenticate(self, request):
-        role = request.data.get("role")
-        if not role:
-            raise ValidationError("Не указан обязательный параметр role!")
-        return base_authenticate(request, role)
 
 def on_start():
     try:
