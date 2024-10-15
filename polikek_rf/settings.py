@@ -92,3 +92,5 @@ REST_FRAMEWORK = {
 }
 APPEND_SLASH = True
 CSP_SCRIPT_SRC = ("'self'", 'ajax.googleapis.com', "'unsafe-inline'")
+SMARTCAPTCHA_ENABLED = True if os.environ.get("SMARTCAPTCHA_ENABLED").lower() == "true" else False
+SMARTCAPTCHA_SERVER_KEY=os.environ.get("SMARTCAPTCHA_SERVER_KEY")

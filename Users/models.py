@@ -18,6 +18,7 @@ class User(models.Model):
     name = models.CharField(max_length=40, blank=True, null=True)
     last_active = models.DateTimeField(auto_now=True)
     group = models.ForeignKey("Group", on_delete=models.SET_NULL, blank=True, null=True)
+    scores = models.JSONField(default=dict)
 
     class Meta:
         db_table = "users"
